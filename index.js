@@ -1,11 +1,20 @@
-const express = require( 'express' );
-const app = express();
+const https = require( 'https' );
+const fs = require( 'fs' );
+
+const opt = {
+    key: fs.readFileSync( 'key.pem' ),
+    cert: fs.readFileSync( 'cert.pem')
+};
 
 // start listener
-app.listen( 5000, () => {
-    console.log( 'Server started' );
-});
+https.createServer( opt, (req, res) => {
+    var body = '';
 
-app.post('/', (req, res) => {
-    console.log( req );
-});
+    req.on( 'data', (data) => {
+        body += data
+    });
+    req.on('end', () => {
+        console.log( body );
+        res.writeHead(200);
+    });
+}).listen( 443 );
